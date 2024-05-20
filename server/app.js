@@ -5,6 +5,7 @@ const PORT = 5005;
 const path = require("path");
 const cohorts = require("./cohorts.json");
 const students = require("./students.json");
+const cors = require("cors");
 
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
@@ -17,6 +18,7 @@ const app = express();
 // Research Team - Set up CORS middleware here:
 // ...
 app.use(express.json());
+app.use(cors());
 app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
