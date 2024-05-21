@@ -6,6 +6,10 @@ const path = require("path");
 const cohorts = require("./cohorts.json");
 const students = require("./students.json");
 const cors = require("cors");
+const mongoose = require("mongoose");
+const Student = require("./models/Student.model");
+const Cohort = require("./models/Cohort.model");
+
 //test1234
 
 // STATIC DATA
@@ -24,6 +28,11 @@ app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+mongoose
+  .connect("mongodb://127.0.0.1:5005/cohort-tools-api")
+  .then((x) => console.log(`Connected to Database: "${x.connections[0].name}"`))
+  .catch((err) => console.error("Error connecting to MongoDB", err));
 
 // ROUTES - https://expressjs.com/en/starter/basic-routing.html
 // Devs Team - Start working on the routes here:
