@@ -42,9 +42,121 @@ app.get("/docs", (_, res) => {
   res.sendFile(path.join(__dirname, "views", "docs.html"));
 });
 
-app.get("/api/cohorts", (_, res) => {});
+app.get("/api/cohorts", async (_, res) => {
+  try {
+    const allCohorts = await Cohort.find();
+    res.json(allCohorts);
+  } catch {
+    res.status(500).json(serverErrorMsg);
+  }
+});
 
-app.get("/api/students", (_, res) => {});
+app.post("/api/cohorts", async (req, res) => {
+  const {
+    inProgress,
+    cohortSlug,
+    cohortName,
+    program,
+    campus,
+    startDate,
+    endDate,
+    programManager,
+    leadTeacher,
+    totalHours,
+  } = req.body;
+  const newCohort = {
+    inProgress,
+    cohortSlug,
+    cohortName,
+    program,
+    campus,
+    startDate,
+    endDate,
+    programManager,
+    leadTeacher,
+    totalHours,
+  };
+
+  try {
+    const createdCohort = await Cohort.create(newCohort);
+    res.status(201).json(createdCohort);
+  } catch (error) {
+    if (error.message.includes("validation")) {
+      res.status(400).json({ message: "Invalid input" });
+    } else {
+      res.status(500).json(serverErrorMsg);
+    }
+  }
+});
+
+app.put("/api/cohorts/:cohortsId", async (req, res) => {
+  const { cohortId } = req.params;
+  const {
+    inProgress,
+    cohortSlug,
+    cohortName,
+    program,
+    campus,
+    startDate,
+    endDate,
+    programManager,
+    leadTeacher,
+    totalHours,
+  } = req.body;
+  const notFoundMsg = { message: `No such cohort with id: ${cohortId}` };
+
+  if (!mongoose.isValidObjectId(cohortId)) {
+    res.status(404).json(notFoundMsg);
+    return;
+  }
+
+  try {
+    const updatedCohort = await Cohort.findByIdAndUpdate(
+      cohortId,
+      {
+        inProgress,
+        cohortSlug,
+        cohortName,
+        program,
+        campus,
+        startDate,
+        endDate,
+        programManager,
+        leadTeacher,
+        totalHours,
+      },
+      { new: true }
+    );
+
+    res.json(updatedCohort);
+  } catch (error) {
+    res.status(400).json({ message: "Invalid Input" });
+  }
+});
+
+app.delete("api/cohorts/:cohortId", async (req, res) => {
+  const { cohortId } = req.params;
+
+  if (!mongoose.isValidObjectId(cohortId)) {
+    res.status(404).json({ message: `No such cohort with id: ${cohortId}` });
+    return;
+  }
+
+  try {
+    await Student.findByIdAndDelete(cohortId);
+  } catch (_) {}
+
+  res.sendStatus(204);
+});
+
+app.get("/api/students", async (_, res) => {
+  try {
+    const allStudents = await Student.find().populate("cohort");
+    res.json(allStudents);
+  } catch {
+    res.status(500).json(serverErrorMsg);
+  }
+});
 
 app.get("/api/students/cohort/:cohortId", async (req, res) => {
   const { cohortId } = req.params;
@@ -58,6 +170,28 @@ app.get("/api/students/cohort/:cohortId", async (req, res) => {
   try {
     const cohortStudents = await Student.find({ cohort: cohortId });
     res.json(cohortStudents);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(serverErrorMsg);
+  }
+});
+
+app.get("/api/students/:studentId", async (req, res) => {
+  const { studentId } = req.params;
+
+  const notFoundMsg = { message: `No such student with id: ${studentId}` };
+  if (!mongoose.isValidObjectId(studentId)) {
+    res.status(404).json(notFoundMsg);
+    return;
+  }
+
+  try {
+    const student = await Student.findById(studentId);
+    if (!student) {
+      res.status(404).json(notFoundMsg);
+      return;
+    }
+    res.json(student);
   } catch (error) {
     console.log(error);
     res.status(500).json(serverErrorMsg);
@@ -96,12 +230,75 @@ app.post("/api/students", async (req, res) => {
     const createdStudent = await Student.create(newStudent);
     res.status(201).json(createdStudent);
   } catch (error) {
+    console.log(error);
     if (error.message.includes("validation")) {
       res.status(400).json({ message: "Invalid input" });
     } else {
       res.status(500).json(serverErrorMsg);
     }
   }
+});
+
+app.put("/api/students/:studentId", async (req, res) => {
+  const { studentId } = req.params;
+  const {
+    firstName,
+    lastName,
+    email,
+    phone,
+    linkedinUrl,
+    languagues,
+    program,
+    background,
+    image,
+    cohort,
+    projects,
+  } = req.body;
+  const notFoundMsg = { message: `No such student with id: ${studentId}` };
+
+  if (!mongoose.isValidObjectId(studentId)) {
+    res.status(404).json(notFoundMsg);
+    return;
+  }
+
+  try {
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      {
+        firstName,
+        lastName,
+        email,
+        phone,
+        linkedinUrl,
+        languagues,
+        program,
+        background,
+        image,
+        cohort,
+        projects,
+      },
+      { new: true }
+    );
+
+    res.json(updatedStudent);
+  } catch (error) {
+    res.status(400).json({ message: "Invalid Input" });
+  }
+});
+
+app.delete("/students/:studentId", async (req, res) => {
+  const { studentId } = req.params;
+
+  if (!mongoose.isValidObjectId(studentId)) {
+    res.status(404).json({ message: `No such student with id: ${studentId}` });
+    return;
+  }
+
+  try {
+    await Student.findByIdAndDelete(studentId);
+  } catch (_) {}
+
+  res.sendStatus(204);
 });
 
 // START SERVER
