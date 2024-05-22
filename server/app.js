@@ -89,6 +89,32 @@ app.post("/api/cohorts", async (req, res) => {
   }
 });
 
+{
+  /*
+app.get("/api/cohorts/:cohortsId", async (req, res) => {
+  const { cohortId } = req.params;
+
+  const notFoundMsg = { message: `No such cohort with id: ${cohortId}` };
+  if (!mongoose.isValidObjectId(cohortId)) {
+    res.status(404).json(notFoundMsg);
+    return;
+  }
+
+  try {
+    const mycohort = await Cohort.findById(cohortId);
+    if (!mycohort) {
+      res.status(404).json(notFoundMsg);
+      return;
+    }
+    res.json(mycohort);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(serverErrorMsg);
+  }
+});
+
+*/
+}
 app.put("/api/cohorts/:cohortsId", async (req, res) => {
   const { cohortId } = req.params;
   const {
