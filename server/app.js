@@ -106,7 +106,7 @@ app.get("/api/cohorts/:cohortId", async (req, res, next) => {
   }
 });
 
-app.put("/api/cohorts/:cohortsId", async (req, res, next) => {
+app.put("/api/cohorts/:cohortId", async (req, res, next) => {
   const { cohortId } = req.params;
   const {
     inProgress,
@@ -151,7 +151,7 @@ app.put("/api/cohorts/:cohortsId", async (req, res, next) => {
   }
 });
 
-app.delete("api/cohorts/:cohortId", async (req, res, next) => {
+app.delete("/api/cohorts/:cohortId", async (req, res, next) => {
   const { cohortId } = req.params;
 
   if (!mongoose.isValidObjectId(cohortId)) {
@@ -160,7 +160,7 @@ app.delete("api/cohorts/:cohortId", async (req, res, next) => {
   }
 
   try {
-    await Student.findByIdAndDelete(cohortId);
+    await Cohort.findByIdAndDelete(cohortId);
     res.sendStatus(204);
   } catch (error) {
     next(error);
