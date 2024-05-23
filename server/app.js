@@ -10,6 +10,7 @@ const mongoose = require("mongoose");
 const Student = require("./models/Student.model");
 const Cohort = require("./models/Cohort.model");
 const serverErrorMsg = "Server Problem, totally not your fault User";
+const errorHandlerRouter = require("./routes/errorHandler.router");
 //test1234
 
 // STATIC DATA
@@ -28,6 +29,7 @@ app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(errorHandlerRouter);
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/cohort-tools-api")
@@ -46,8 +48,8 @@ app.get("/api/cohorts", async (_, res) => {
   try {
     const allCohorts = await Cohort.find();
     res.json(allCohorts);
-  } catch {
-    res.status(500).json(serverErrorMsg);
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -81,11 +83,7 @@ app.post("/api/cohorts", async (req, res) => {
     const createdCohort = await Cohort.create(newCohort);
     res.status(201).json(createdCohort);
   } catch (error) {
-    if (error.message.includes("validation")) {
-      res.status(400).json({ message: "Invalid input" });
-    } else {
-      res.status(500).json(serverErrorMsg);
-    }
+    next(error);
   }
 });
 
@@ -106,8 +104,7 @@ app.get("/api/cohorts/:cohortId", async (req, res) => {
     }
     res.json(mycohort);
   } catch (error) {
-    console.log(error);
-    res.status(500).json(serverErrorMsg);
+    next(error);
   }
 });
 
@@ -152,7 +149,7 @@ app.put("/api/cohorts/:cohortsId", async (req, res) => {
 
     res.json(updatedCohort);
   } catch (error) {
-    res.status(400).json({ message: "Invalid Input" });
+    next(error);
   }
 });
 
@@ -166,9 +163,10 @@ app.delete("api/cohorts/:cohortId", async (req, res) => {
 
   try {
     await Student.findByIdAndDelete(cohortId);
-  } catch (_) {}
-
-  res.sendStatus(204);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get("/api/students", async (_, res) => {
@@ -176,8 +174,8 @@ app.get("/api/students", async (_, res) => {
     const allStudents = await Student.find().populate("cohort");
     // const allStudents = await Student.find();
     res.json(allStudents);
-  } catch {
-    res.status(500).json(serverErrorMsg);
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -196,8 +194,7 @@ app.get("/api/students/cohort/:cohortId", async (req, res) => {
     );
     res.json(cohortStudents);
   } catch (error) {
-    console.log(error);
-    res.status(500).json(serverErrorMsg);
+    next(error);
   }
 });
 
@@ -218,8 +215,7 @@ app.get("/api/students/:studentId", async (req, res) => {
     }
     res.json(student);
   } catch (error) {
-    console.log(error);
-    res.status(500).json(serverErrorMsg);
+    next(error);
   }
 });
 
@@ -255,12 +251,7 @@ app.post("/api/students", async (req, res) => {
     const createdStudent = await Student.create(newStudent);
     res.status(201).json(createdStudent);
   } catch (error) {
-    console.log(error);
-    if (error.message.includes("validation")) {
-      res.status(400).json({ message: "Invalid input" });
-    } else {
-      res.status(500).json(serverErrorMsg);
-    }
+    next(error);
   }
 });
 
@@ -307,7 +298,7 @@ app.put("/api/students/:studentId", async (req, res) => {
 
     res.json(updatedStudent);
   } catch (error) {
-    res.status(400).json({ message: "Invalid Input" });
+    next(error);
   }
 });
 
@@ -321,9 +312,10 @@ app.delete("/api/students/:studentId", async (req, res) => {
 
   try {
     await Student.findByIdAndDelete(studentId);
-  } catch (_) {}
-
-  res.sendStatus(204);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // START SERVER
