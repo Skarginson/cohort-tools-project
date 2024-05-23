@@ -311,7 +311,7 @@ app.put("/api/students/:studentId", async (req, res) => {
   }
 });
 
-app.delete("/students/:studentId", async (req, res) => {
+app.delete("/api/students/:studentId", async (req, res) => {
   const { studentId } = req.params;
 
   if (!mongoose.isValidObjectId(studentId)) {
