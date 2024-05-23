@@ -89,9 +89,7 @@ app.post("/api/cohorts", async (req, res) => {
   }
 });
 
-{
-  /*
-app.get("/api/cohorts/:cohortsId", async (req, res) => {
+app.get("/api/cohorts/:cohortId", async (req, res) => {
   const { cohortId } = req.params;
 
   const notFoundMsg = { message: `No such cohort with id: ${cohortId}` };
@@ -113,8 +111,6 @@ app.get("/api/cohorts/:cohortsId", async (req, res) => {
   }
 });
 
-*/
-}
 app.put("/api/cohorts/:cohortsId", async (req, res) => {
   const { cohortId } = req.params;
   const {
