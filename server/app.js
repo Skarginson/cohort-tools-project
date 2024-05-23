@@ -51,7 +51,7 @@ app.get("/api/cohorts", async (_, res) => {
   }
 });
 
-app.post("/api/cohorts", async (req, res) => {
+app.post("/api/cohorts", async (req, res, next) => {
   const {
     inProgress,
     cohortSlug,
@@ -85,7 +85,7 @@ app.post("/api/cohorts", async (req, res) => {
   }
 });
 
-app.get("/api/cohorts/:cohortId", async (req, res) => {
+app.get("/api/cohorts/:cohortId", async (req, res, next) => {
   const { cohortId } = req.params;
 
   const notFoundMsg = { message: `No such cohort with id: ${cohortId}` };
@@ -106,7 +106,7 @@ app.get("/api/cohorts/:cohortId", async (req, res) => {
   }
 });
 
-app.put("/api/cohorts/:cohortsId", async (req, res) => {
+app.put("/api/cohorts/:cohortsId", async (req, res, next) => {
   const { cohortId } = req.params;
   const {
     inProgress,
@@ -151,7 +151,7 @@ app.put("/api/cohorts/:cohortsId", async (req, res) => {
   }
 });
 
-app.delete("api/cohorts/:cohortId", async (req, res) => {
+app.delete("api/cohorts/:cohortId", async (req, res, next) => {
   const { cohortId } = req.params;
 
   if (!mongoose.isValidObjectId(cohortId)) {
@@ -167,7 +167,7 @@ app.delete("api/cohorts/:cohortId", async (req, res) => {
   }
 });
 
-app.get("/api/students", async (_, res) => {
+app.get("/api/students", async (_, res, next) => {
   try {
     const allStudents = await Student.find().populate("cohort");
     // const allStudents = await Student.find();
@@ -177,7 +177,7 @@ app.get("/api/students", async (_, res) => {
   }
 });
 
-app.get("/api/students/cohort/:cohortId", async (req, res) => {
+app.get("/api/students/cohort/:cohortId", async (req, res, next) => {
   const { cohortId } = req.params;
 
   const notFoundMsg = { message: `No such cohort with id: ${cohortId}` };
@@ -196,7 +196,7 @@ app.get("/api/students/cohort/:cohortId", async (req, res) => {
   }
 });
 
-app.get("/api/students/:studentId", async (req, res) => {
+app.get("/api/students/:studentId", async (req, res, next) => {
   const { studentId } = req.params;
 
   const notFoundMsg = { message: `No such student with id: ${studentId}` };
@@ -217,7 +217,7 @@ app.get("/api/students/:studentId", async (req, res) => {
   }
 });
 
-app.post("/api/students", async (req, res) => {
+app.post("/api/students", async (req, res, next) => {
   const {
     firstName,
     lastName,
@@ -253,7 +253,7 @@ app.post("/api/students", async (req, res) => {
   }
 });
 
-app.put("/api/students/:studentId", async (req, res) => {
+app.put("/api/students/:studentId", async (req, res, next) => {
   const { studentId } = req.params;
   const {
     firstName,
@@ -300,7 +300,7 @@ app.put("/api/students/:studentId", async (req, res) => {
   }
 });
 
-app.delete("/api/students/:studentId", async (req, res) => {
+app.delete("/api/students/:studentId", async (req, res, next) => {
   const { studentId } = req.params;
 
   if (!mongoose.isValidObjectId(studentId)) {
