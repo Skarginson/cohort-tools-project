@@ -9,7 +9,6 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const Student = require("./models/Student.model");
 const Cohort = require("./models/Cohort.model");
-const serverErrorMsg = "Server Problem, totally not your fault User";
 const errorHandlerRouter = require("./routes/errorHandler.router");
 //test1234
 
@@ -29,7 +28,6 @@ app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(errorHandlerRouter);
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/cohort-tools-api")
@@ -318,6 +316,7 @@ app.delete("/api/students/:studentId", async (req, res) => {
   }
 });
 
+app.use(errorHandlerRouter);
 // START SERVER
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
