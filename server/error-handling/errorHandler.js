@@ -1,13 +1,10 @@
-const { Router } = require("express");
-const router = Router();
-
 const { handleNotFound } = require("../utils");
 
-router.use("*", (_, res) => {
+function catchAll(_, res) {
   handleNotFound(res);
-});
+}
 
-router.use((err, req, res, next) => {
+function errorHandler(err, req, res, next) {
   console.error(err);
 
   if (res.headersSend) {
@@ -19,6 +16,6 @@ router.use((err, req, res, next) => {
   } else {
     res.status(500).json({ message: "Internal Server Error" });
   }
-});
+}
 
-module.exports = router;
+module.exports = { catchAll, errorHandler };

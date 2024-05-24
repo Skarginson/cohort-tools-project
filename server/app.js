@@ -3,13 +3,17 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const PORT = 5005;
 const path = require("path");
-const cohorts = require("./cohorts.json");
-const students = require("./students.json");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const Student = require("./models/Student.model");
 const Cohort = require("./models/Cohort.model");
-const errorHandlerRouter = require("./routes/errorHandler.router");
+const User = require("./models/User.model");
+const authRoutes = require("./routes/auth.routes");
+const { catchAll, errorHandler } = require("./error-handling/errorHandler");
+const {
+  secretKey,
+  isAuthenticated,
+} = require("./middlewares/authentication.middleware");
 //test1234
 
 // STATIC DATA
@@ -37,6 +41,19 @@ mongoose
 // ROUTES - https://expressjs.com/en/starter/basic-routing.html
 // Devs Team - Start working on the routes here:
 // ...
+app.use("/auth", authRoutes);
+
+app.get("/api/users/:userId", isAuthenticated, async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await User.findOne({ _id: userId });
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  res.json(user);
+});
 
 app.get("/docs", (_, res) => {
   res.sendFile(path.join(__dirname, "views", "docs.html"));
@@ -316,7 +333,8 @@ app.delete("/api/students/:studentId", async (req, res, next) => {
   }
 });
 
-app.use(errorHandlerRouter);
+app.use(catchAll);
+app.use(errorHandler);
 // START SERVER
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
